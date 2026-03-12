@@ -25,7 +25,7 @@ public class PyPayloadRegistry {
      */
     public static void registerAll() {
         // 在此注册所有网络包
-        registerAll(ListLevelPayload.TYPE, ListLevelPayload::handle);
+        register(ListLevelPayload.TYPE, ListLevelPayload::handle);
         PyCraft.LOGGER.info("[PyPayload] Registered {} payload types", HANDLERS.size());
     }
 
@@ -36,7 +36,7 @@ public class PyPayloadRegistry {
      * @param handler 包处理器
      * @param <T>     包类
      */
-    public static <T extends PyPayload> void registerAll(PyPayloadType<T> type, PyPayloadHandler<T> handler) {
+    public static <T extends PyPayload> void register(PyPayloadType<T> type, PyPayloadHandler<T> handler) {
         if (HANDLERS.containsKey(type.type()))
             throw new IllegalArgumentException("Payload type already registered: " + type.type());
         HANDLERS.put(type.type(), new RegisteredHandler<>(type.codec(), handler));

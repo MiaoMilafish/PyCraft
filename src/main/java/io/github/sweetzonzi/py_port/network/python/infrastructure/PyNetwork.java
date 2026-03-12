@@ -9,6 +9,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
@@ -32,7 +33,6 @@ public final class PyNetwork {
         try {
             serverChannel = bootstrap.bind(port).sync().channel();
             PyCraft.LOGGER.info("[PyNetwork] PyCraft Netty server started on port {}", port);
-            PyPayloadRegistry.registerAll();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -43,6 +43,11 @@ public final class PyNetwork {
         if (worker != null) worker.shutdownGracefully();
         if (boss != null) boss.shutdownGracefully();
         PyCraft.LOGGER.info("[PyNetwork] PyCraft Netty server stopped");
+    }
+
+    @SubscribeEvent
+    public static void onSetup(FMLCommonSetupEvent event) {
+        PyPayloadRegistry.registerAll();
     }
 
     @SubscribeEvent
