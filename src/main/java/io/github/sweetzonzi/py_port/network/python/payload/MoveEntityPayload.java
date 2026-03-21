@@ -53,19 +53,34 @@ public record MoveEntityPayload(
         double targetY = payload.y();
         double targetZ = payload.z();
 
-        /*
-         * 玩家和普通实体的移动方式不同
-         */
         if (entity instanceof ServerPlayer player) {
 
-            // 玩家必须使用 connection.teleport
-            player.connection.teleport(
-                    targetX,
-                    targetY,
-                    targetZ,
-                    player.getYRot(),
-                    player.getXRot()
+            Vec3 current = player.position();
+            Vec3 target = new Vec3(targetX, targetY, targetZ);
+
+            // 忽略Y轴
+            Vec3 delta = new Vec3(
+                    target.x - current.x,
+                    0,
+                    target.z - current.z
             );
+
+            double distance = delta.length();
+
+            if (distance < 0.05) {
+                player.setDeltaMovement(Vec3.ZERO);
+            } else {
+
+                // 单位方向
+                Vec3 direction = delta.normalize();
+
+                // P控制：距离越近速度越小
+                double k = 0.5;  // 增益（可调）
+                double speed = Math.min(payload.speed(), distance * k);
+                Vec3 velocity = direction.scale(speed);
+                player.setDeltaMovement(velocity);
+                player.hurtMarked = true;
+            }
         } else {
             // 普通实体使用速度移动
             Vec3 current = entity.position();

@@ -32,9 +32,11 @@ public class PyPayloadRegistry {
         register(GetBlockPayload.TYPE, GetBlockPayload::handle);
         register(GetEntityPosPayload.TYPE, GetEntityPosPayload::handle);
         register(TeleportEntityPayload.TYPE, TeleportEntityPayload::handle);
+        register(SetRotationPayload.TYPE, SetRotationPayload::handle);
+        register(GetRotationPayload.TYPE, GetRotationPayload::handle);
         register(GetPlayersPayload.TYPE, GetPlayersPayload::handle);
         register(MoveEntityPayload.TYPE, MoveEntityPayload::handle);
-        register(SetCameraPayload.TYPE, SetCameraPayload::handle);
+        register(SetPerspectivePayload.TYPE, SetPerspectivePayload::handle);
         PyCraft.LOGGER.info("[PyPayload] Registered {} payload types", HANDLERS.size());
     }
 
