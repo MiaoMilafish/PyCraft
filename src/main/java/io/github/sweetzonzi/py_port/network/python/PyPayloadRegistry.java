@@ -39,6 +39,7 @@ public class PyPayloadRegistry {
         register(SetPerspectivePayload.TYPE, SetPerspectivePayload::handle);
         register(SpawnEntityPayload.TYPE, SpawnEntityPayload::handle);
         register(SpawnParticlePayload.TYPE, SpawnParticlePayload::handle);
+        register(DrawPathPayload.TYPE, DrawPathPayload::handle);
         PyCraft.LOGGER.info("[PyPayload] Registered {} payload types", HANDLERS.size());
     }
 

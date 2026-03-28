@@ -17,12 +17,14 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 
+import java.util.concurrent.CompletableFuture;
+
 public record SpawnEntityPayload(
-        ResourceLocation level,      // 维度ID，例如 minecraft:overworld
-        double x,                    // 坐标X
-        double y,                    // 坐标Y
-        double z,                    // 坐标Z
-        ResourceLocation entity_type // 实体类型ID，例如 minecraft:pig
+        ResourceLocation level,
+        double x,
+        double y,
+        double z,
+        ResourceLocation entity_type
 ) implements PyPayload {
 
     public static final Codec<SpawnEntityPayload> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -33,17 +35,19 @@ public record SpawnEntityPayload(
             ResourceLocation.CODEC.fieldOf("entity_type").forGetter(SpawnEntityPayload::entity_type)
     ).apply(instance, SpawnEntityPayload::new));
 
-    public static final PyPayloadType<SpawnEntityPayload> TYPE = new PyPayloadType<>("spawn_entity", CODEC);
+    public static final PyPayloadType<SpawnEntityPayload> TYPE =
+            new PyPayloadType<>("spawn_entity", CODEC);
 
     @Override
-    public PyPayloadType<?> type() { return TYPE; }
+    public PyPayloadType<?> type() {return TYPE;}
 
     public static PyHandleResult handle(SpawnEntityPayload payload, PyContext context) {
         var server = context.getServer();
         if (server == null) {
             return PyHandleResult.fail("Server is not running");
         }
-        // 获取目标维度
+
+        // 获取维度
         ServerLevel serverLevel = server.getLevel(ResourceKey.create(Registries.DIMENSION, payload.level()));
         if (serverLevel == null) {
             return PyHandleResult.fail("Level " + payload.level() + " not found");
@@ -51,22 +55,57 @@ public record SpawnEntityPayload(
 
         // 获取实体类型
         EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(payload.entity_type());
+        if (type == null) {
+            return PyHandleResult.fail("Invalid entity type: " + payload.entity_type());
+        }
 
-        // 在服务器主线程执行生成操作
+        CompletableFuture<JsonObject> future = new CompletableFuture<>();
+
+        // 在主线程执行
         server.execute(() -> {
-            Entity entity = type.create(serverLevel);
-            if (entity != null) {
+            try {
+                JsonObject result = new JsonObject();
+
+                Entity entity = type.create(serverLevel);
+                if (entity == null) {
+                    future.completeExceptionally(
+                            new RuntimeException("Failed to create entity")
+                    );
+                    return;
+                }
+
+                // 设置位置
                 entity.moveTo(payload.x(), payload.y(), payload.z(), 0, 0);
 
-                // 如果是生物，初始化其默认行为（如随机花色）
+                // 初始化生物
                 if (entity instanceof Mob mob) {
-                    mob.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(entity.blockPosition()),
-                            MobSpawnType.COMMAND, null);
+                    mob.finalizeSpawn(
+                            serverLevel,
+                            serverLevel.getCurrentDifficultyAt(entity.blockPosition()),
+                            MobSpawnType.COMMAND,
+                            null
+                    );
                 }
+
+                // 添加到世界
                 serverLevel.addFreshEntity(entity);
+
+                // 返回信息
+                result.addProperty("id", entity.getId());
+                result.addProperty("type", payload.entity_type().toString());
+
+                future.complete(result);
+
+            } catch (Exception e) {
+                future.completeExceptionally(e);
             }
         });
 
-        return PyHandleResult.success(new JsonObject());
+        try {
+            JsonObject result = future.get();
+            return PyHandleResult.success(result);
+        } catch (Exception e) {
+            return PyHandleResult.fail("Spawn failed: " + e.getMessage());
+        }
     }
 }
