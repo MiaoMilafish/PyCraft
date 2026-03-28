@@ -43,19 +43,16 @@ public record SpawnEntityPayload(
         if (server == null) {
             return PyHandleResult.fail("Server is not running");
         }
-
-        // 1. 获取目标维度
+        // 获取目标维度
         ServerLevel serverLevel = server.getLevel(ResourceKey.create(Registries.DIMENSION, payload.level()));
         if (serverLevel == null) {
             return PyHandleResult.fail("Level " + payload.level() + " not found");
         }
 
-        // 2. 获取实体类型
+        // 获取实体类型
         EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(payload.entity_type());
 
-        // 3. 必须在服务器主线程执行生成操作
-        // 由于需要返回 UUID，我们可以在主线程外先准备好 UUID（或者直接返回成功）
-        // 这里为了确保实体 ID 能传回，我们假设直接返回，生成过程交由 Server Queue
+        // 在服务器主线程执行生成操作
         server.execute(() -> {
             Entity entity = type.create(serverLevel);
             if (entity != null) {
@@ -66,12 +63,10 @@ public record SpawnEntityPayload(
                     mob.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(entity.blockPosition()),
                             MobSpawnType.COMMAND, null);
                 }
-
                 serverLevel.addFreshEntity(entity);
             }
         });
 
-        // 返回成功，如果需要追踪，可以根据 context 进一步优化返回 entity.getUUID()
         return PyHandleResult.success(new JsonObject());
     }
 }
