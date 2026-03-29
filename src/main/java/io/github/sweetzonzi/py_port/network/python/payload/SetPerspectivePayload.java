@@ -7,8 +7,8 @@ import io.github.sweetzonzi.py_port.network.python.infrastructure.PyContext;
 import io.github.sweetzonzi.py_port.network.python.infrastructure.PyHandleResult;
 import io.github.sweetzonzi.py_port.network.python.infrastructure.PyPayload;
 import io.github.sweetzonzi.py_port.network.python.infrastructure.PyPayloadType;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.CameraType;
+import net.minecraft.client.Minecraft;
 
 public record SetPerspectivePayload(
         int mode // 0: 第一人称, 1: 第三人称背面, 2: 第三人称正面

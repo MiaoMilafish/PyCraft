@@ -3,8 +3,10 @@ package io.github.sweetzonzi.py_port.network.python.payload;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.sweetzonzi.py_port.network.python.infrastructure.*;
-
+import io.github.sweetzonzi.py_port.network.python.infrastructure.PyContext;
+import io.github.sweetzonzi.py_port.network.python.infrastructure.PyHandleResult;
+import io.github.sweetzonzi.py_port.network.python.infrastructure.PyPayload;
+import io.github.sweetzonzi.py_port.network.python.infrastructure.PyPayloadType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.DebugPackets;
 import net.minecraft.server.level.ServerLevel;
