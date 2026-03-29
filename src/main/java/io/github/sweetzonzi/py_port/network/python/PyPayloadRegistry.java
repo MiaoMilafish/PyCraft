@@ -6,8 +6,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import io.github.sweetzonzi.py_port.PyCraft;
 import io.github.sweetzonzi.py_port.network.python.infrastructure.*;
-import io.github.sweetzonzi.py_port.network.python.payload.GetTimePayload;
-import io.github.sweetzonzi.py_port.network.python.payload.ListLevelPayload;
+import io.github.sweetzonzi.py_port.network.python.payload.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +27,19 @@ public class PyPayloadRegistry {
         // 在此注册所有网络包
         register(ListLevelPayload.TYPE, ListLevelPayload::handle);
         register(GetTimePayload.TYPE, GetTimePayload::handle);
+        register(SetBlockPayload.TYPE, SetBlockPayload::handle);
+        register(SetBlocksPayload.TYPE, SetBlocksPayload::handle);
+        register(GetBlockPayload.TYPE, GetBlockPayload::handle);
+        register(GetEntityPosPayload.TYPE, GetEntityPosPayload::handle);
+        register(TeleportEntityPayload.TYPE, TeleportEntityPayload::handle);
+        register(SetRotationPayload.TYPE, SetRotationPayload::handle);
+        register(GetRotationPayload.TYPE, GetRotationPayload::handle);
+        register(GetPlayersPayload.TYPE, GetPlayersPayload::handle);
+        register(MoveEntityPayload.TYPE, MoveEntityPayload::handle);
+        register(SetPerspectivePayload.TYPE, SetPerspectivePayload::handle);
+        register(SpawnEntityPayload.TYPE, SpawnEntityPayload::handle);
+        register(SpawnParticlePayload.TYPE, SpawnParticlePayload::handle);
+        register(DrawPathPayload.TYPE, DrawPathPayload::handle);
         PyCraft.LOGGER.info("[PyPayload] Registered {} payload types", HANDLERS.size());
     }
 
