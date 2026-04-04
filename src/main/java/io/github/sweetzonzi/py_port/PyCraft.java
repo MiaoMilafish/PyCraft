@@ -1,6 +1,7 @@
 package io.github.sweetzonzi.py_port;
 
 import com.mojang.logging.LogUtils;
+import io.github.sweetzonzi.py_port.network.python.PyPayloadRegistry;
 import io.github.sweetzonzi.py_port.network.python.payload.PlayerNameHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
@@ -85,6 +86,7 @@ public class PyCraft {
     private void commonSetup(final FMLCommonSetupEvent event) {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
+        PyPayloadRegistry.registerAll();
     }
 
     // Add the example block item to the building blocks tab
