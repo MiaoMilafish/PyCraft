@@ -27,7 +27,7 @@ public record SpawnEntityPayload(
         double y,
         double z,
         ResourceLocation entity_type,
-        Optional<Boolean> is_agent   // 替换 no_ai
+        Optional<Boolean> is_agent  // 是否禁用AI
 ) implements PyPayload {
 
     public static final Codec<SpawnEntityPayload> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -83,12 +83,12 @@ public record SpawnEntityPayload(
                             null
                     );
 
-                    // 注册为 agent
+                    // 注册为 agent（即玩家自行控制）
                     if (payload.is_agent().orElse(false)) {
-                        mob.setNoAi(true); // 只是辅助
+                        mob.setNoAi(true);
 
                         mob.setDeltaMovement(0, 0, 0);
-                        mob.setNoGravity(false); // RL一般要保留物理
+                        mob.setNoGravity(false); // 保留物理
 
                         AgentManager.register(mob);
                     }

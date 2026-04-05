@@ -1,8 +1,13 @@
 package io.github.sweetzonzi.py_port;
 
 import com.mojang.logging.LogUtils;
+import io.github.sweetzonzi.py_port.client.render.LineRenderer;
 import io.github.sweetzonzi.py_port.network.python.PyPayloadRegistry;
 import io.github.sweetzonzi.py_port.network.python.payload.PlayerNameHandler;
+import io.github.sweetzonzi.py_port.network.DrawLinePayload;           // 新增
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;  // 新增
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;       // 新增
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -64,6 +69,7 @@ public class PyCraft {
     public PyCraft(IEventBus modEventBus, ModContainer modContainer) {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::registerPayloadHandlers);
 
         // Register the Deferred Register to the mod event bus so blocks get registered
         BLOCKS.register(modEventBus);
@@ -77,6 +83,7 @@ public class PyCraft {
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(PlayerNameHandler.class);
+        NeoForge.EVENT_BUS.register(LineRenderer.class);
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
@@ -87,6 +94,17 @@ public class PyCraft {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
         PyPayloadRegistry.registerAll();
+    }
+
+    @SubscribeEvent
+    public void registerPayloadHandlers(final RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar(MOD_ID);
+
+        registrar.playToClient(
+                DrawLinePayload.TYPE,
+                DrawLinePayload.STREAM_CODEC,  // 使用 StreamCodec
+                (payload, context) -> payload.handle(context)
+        );
     }
 
     // Add the example block item to the building blocks tab
