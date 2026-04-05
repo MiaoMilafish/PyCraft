@@ -7,9 +7,8 @@ import io.github.sweetzonzi.py_port.network.python.infrastructure.PyContext;
 import io.github.sweetzonzi.py_port.network.python.infrastructure.PyHandleResult;
 import io.github.sweetzonzi.py_port.network.python.infrastructure.PyPayload;
 import io.github.sweetzonzi.py_port.network.python.infrastructure.PyPayloadType;
-
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 

@@ -7,7 +7,6 @@ import io.github.sweetzonzi.py_port.network.python.infrastructure.PyContext;
 import io.github.sweetzonzi.py_port.network.python.infrastructure.PyHandleResult;
 import io.github.sweetzonzi.py_port.network.python.infrastructure.PyPayload;
 import io.github.sweetzonzi.py_port.network.python.infrastructure.PyPayloadType;
-
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
